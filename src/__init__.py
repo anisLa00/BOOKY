@@ -5,7 +5,8 @@ from contextlib import asynccontextmanager
 from src.auth.router import auth_router
 from src.tags.routes import tag_router
 from src.db.main import init_db
-
+from .errors import register_all_errors
+from .middleware import register_middleware
 
 @asynccontextmanager
 async def life_span(app:FastAPI):
@@ -20,10 +21,19 @@ version = "v1"
 
 app = FastAPI(
     title="Bookly",
-    description="va rest api for a book rivew web service",
+    description="A REST API for a book rivew web service",
     version= version,
+    docs_url=f"/api/{version}/docs",
+    license_info={
+        "name":"MIT",
+        "url":"https://opensource.org/license/mit/"
+    },
+    openapi_url=f"/api/{version}/openapi.json"
     
 )
+register_all_errors(app)
+register_middleware(app)
+
 
 
 app.include_router(book_router , prefix="/api/{version}/books", tags=["books"])

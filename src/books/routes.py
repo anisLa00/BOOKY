@@ -8,6 +8,7 @@ import uuid
 from sqlalchemy.exc import DataError
 from src.auth.dependencies import AccessTokenBearer,RoleChecker
 from typing import List
+from src.errors import  BookNotFound 
 
 book_router = APIRouter()
 book_service = BookService()
@@ -47,7 +48,7 @@ async def get_book(book_uid: str,session:AsyncSession=Depends(get_session),token
     if book:
         return book
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="book not found")
+        raise BookNotFound()
 
 
 @book_router.patch("/{book_uid}", response_model=Book,dependencies=[role_checker])
@@ -62,7 +63,7 @@ async def update_book(book_uid: str, book_update_date: BookUpdateModel, session:
 
     if updated_book is None:
 
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="book not found")
+        raise BookNotFound()
 
     return updated_book
 
@@ -75,7 +76,7 @@ async def remove_book(book_uid: str,session:AsyncSession=Depends(get_session),to
     book_to_detete = await book_service.delate_book(book_uid,session)
 
     if book_to_detete is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="book not found")
+        raise BookNotFound
     else:
         return {"message":"book deleted succsefully"}
 
@@ -90,7 +91,7 @@ async def delete_all_books(
 
     if delete_all is None:
 
-        raise HTTPException(status_code=404, detail="no books found")
+        raise BookNotFound
     else:
         return {"message":"All books deleted succsefully"}
 

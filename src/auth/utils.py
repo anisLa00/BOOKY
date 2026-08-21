@@ -1,6 +1,7 @@
 from passlib.context import CryptContext
 from datetime import timedelta,datetime
 from src.config import Config
+from itsdangerous import URLSafeTimedSerializer,SignatureExpired,BadTimeSignature
 import jwt
 import uuid
 import logging
@@ -47,7 +48,32 @@ def decoder_token(token:str) ->dict:
         except jwt.PyJWTError as e:
                logging.exception(e)
                return None
-               
 
+        
+serializer= URLSafeTimedSerializer(
+              secret_key=Config.JWT_SECERT,
+              salt="email verification")
+
+
+def create_url_safe_token(data:dict):
+      
+       token=serializer.dumps(data)
+
+       return token
+
+def decode_url_safe_token(token:str):
+       try:
+           token_data =serializer.loads(token, max_age=3600)
+
+           return token_data
+       
+       except SignatureExpired:
+                print("Token expired")
+                return None
+       except BadTimeSignature:
+              print("invalid Token")
+              return None
+                
+       
 
 

@@ -80,6 +80,7 @@ class AccountNotVerified(Exception):
     """Account not yet verified"""
     pass
 
+
 def create_exception_handler(
     status_code: int, initial_detail: Any
 ) -> Callable[[Request, Exception], JSONResponse]:

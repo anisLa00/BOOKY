@@ -38,4 +38,14 @@ class UserBookModel(UserModel):
 class UserLoginUser(BaseModel):
       Email:str =Field(max_length=50)
       password:str = Field(min_length=6)
-      
+
+class EmailsModel(BaseModel):
+       adresses:List[str]      
+
+
+class ResetRequestPasswordModel(BaseModel):
+       email:str
+
+class ResetPasswordConfirmModel(BaseModel):
+       new_password:str
+       confirm_new_password:str       
