@@ -1,23 +1,23 @@
 # BOOKY 📚
 
-BOOKY is a backend REST API for managing books, users, reviews, and tags.
+A backend REST API for managing books, users, reviews, and tags.
 
-The project is built with Python and FastAPI and uses PostgreSQL as the main database.
+BOOKY is built with **Python + FastAPI** and uses **PostgreSQL** as its main database. The project also includes authentication, email verification, Redis/Celery background processing, database migrations, and automated API tests.
 
-## 🚀 Features
+## ✨ Features
 
-- 🔐 User authentication
+- 🔐 User authentication and JWT authorization
 - 👤 User management
 - 📚 Book management
 - ⭐ Reviews and ratings
 - 🏷️ Book tags
 - 📧 Email verification
 - ⚡ Background tasks with Celery
-- 🔴 Redis for task queuing
+- 🔴 Redis for task processing
 - 🗄️ PostgreSQL database
 - 🔄 Database migrations with Alembic
 - 🧪 API testing with Pytest
-- 📖 Interactive API documentation with Swagger
+- 📖 Interactive API documentation with Swagger/OpenAPI
 
 ## 🛠️ Tech Stack
 
@@ -25,17 +25,21 @@ The project is built with Python and FastAPI and uses PostgreSQL as the main dat
 - FastAPI
 - SQLAlchemy
 - PostgreSQL
+- Pydantic
 - Alembic
 - Redis
 - Celery
 - Pytest
-- Pydantic
+- JWT
+- SMTP / Email
+- Swagger / OpenAPI
 
-## 📁 Project Structure
+## 🏗️ Project Structure
 
 ```text
 BOOKY/
 ├── migrations/
+│   └── versions/
 ├── src/
 │   ├── auth/
 │   ├── books/
@@ -51,4 +55,5 @@ BOOKY/
 ├── .gitignore
 ├── alembic.ini
 ├── requirements.txt
+├── LICENSE
 └── README.md
