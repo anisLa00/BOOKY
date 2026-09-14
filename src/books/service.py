@@ -5,6 +5,7 @@ from sqlmodel import select , desc
 from src.db.models import Book
 from datetime import datetime
 from sqlalchemy import delete 
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class BookService:
@@ -43,19 +44,29 @@ class BookService:
 
             return new_book
 
-    async def update_book(self,book_uid=str,update_date= BookUpdateModel,session=AsyncSession):
-            book_to_update = await self.get_book(book_uid,session)
+    async def update_book(
+        self, book_uid: uuid.UUID, update_date: BookUpdateModel, session: AsyncSession
+    ):
+        book_to_update = await self.get_book(book_uid, session)
+        if book_to_update is None:
+            return None
 
-            if book_to_update is not None:
-                   update_date_dict = update_date.model_dump()
+        update_data = update_date.model_dump(exclude_unset=True)
+        if not update_data:
+            return book_to_update
 
-                   for k, v in update_date_dict.items():
-                       setattr(book_to_update, k, v)
-                       await session.commit()  
+        for field, value in update_data.items():
+            setattr(book_to_update, field, value)
+        book_to_update.updated_at = datetime.now()
 
-                   return book_to_update
-            else:
-                   return None 
+        try:
+            await session.commit()
+        except SQLAlchemyError:
+            await session.rollback()
+            raise
+
+        await session.refresh(book_to_update)
+        return book_to_update
 
     async def delate_book(self,book_uid=str,session=AsyncSession):
                 book_to_delete = await self.get_book(book_uid,session)

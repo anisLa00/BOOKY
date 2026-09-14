@@ -1,28 +1,22 @@
+from src.auth import router as auth_routes
 from src.auth.schemas import UserCreateModel
 
-auth_prefix=f"api/v1/auth"
-def test_ueser_creation(fake_session,fake_users,test_client):
-    asignup_data={
-    "first_name" :"ellafi",
-    "last_name":"anis",
-    "username":"anisansid",
-    "Email":"anisellafi0@gmail.com",
-    "password":"123467ds"
-}
-    
-    response= test_client.post(
-        url=f"{auth_prefix}/signup",
-        json=asignup_data
+
+def test_user_creation(test_client, fake_session, fake_users):
+    signup_data = {
+        "first_name": "Test",
+        "last_name": "Reader",
+        "username": "reader",
+        "Email": "reader@example.com",
+        "password": "test-password",
+    }
+    # Preserve the existing public signup spelling in this repair.
+    response = test_client.post("/api/v1/auth/Singup", json=signup_data)
+
+    assert response.status_code == 201
+    fake_users.exist_user.assert_awaited_once_with(signup_data["Email"], fake_session)
+    fake_users.Create_user.assert_awaited_once_with(
+        UserCreateModel(**signup_data), fake_session
     )
-
-   
-    user_data=UserCreateModel(**asignup_data)
-
-
-    assert fake_users.user_exists_called_once()
-    assert fake_users.user_exists_called_once_with(asignup_data["Email"],fake_session)
-    assert fake_users.create_exists_called_once()
-    assert fake_users.create_user_called_once_with(user_data,fake_session)
-    
-    
-
+    fake_session.commit.assert_awaited_once()
+    auth_routes.send_email.delay.assert_called_once()

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from datetime import datetime , date
 from src.review.schemas import ReviewModel
 from typing import List
@@ -31,8 +31,16 @@ class BookCreateModel(BaseModel):
     
 
 class BookUpdateModel(BaseModel):
-    title: str
-    author: str
-    publisher: str
-    page_count: int
-    language: str
+    title: str | None = None
+    author: str | None = None
+    publisher: str | None = None
+    page_count: int | None = None
+    language: str | None = None
+
+    @field_validator("title", "author", "publisher", "page_count", "language")
+    @classmethod
+    def reject_null(cls, value):
+        # Fields may be omitted, but their database columns cannot store NULL.
+        if value is None:
+            raise ValueError("Omit the field instead of setting it to null")
+        return value
