@@ -1,11 +1,9 @@
 from fastapi import APIRouter, status,Depends
 from src.books.schemas import BookUpdateModel, Book, BookCreateModel,BookDetails
-from fastapi.exceptions import HTTPException
 from src.db.main import get_session
 from src.books.service import BookService
 from sqlmodel.ext.asyncio.session import AsyncSession
 import uuid
-from sqlalchemy.exc import DataError
 from src.auth.dependencies import AccessTokenBearer,RoleChecker
 from typing import List
 from src.errors import  BookNotFound 
@@ -52,14 +50,9 @@ async def get_book(book_uid: str,session:AsyncSession=Depends(get_session),token
 
 
 @book_router.patch("/{book_uid}", response_model=Book,dependencies=[role_checker])
-async def update_book(book_uid: str, book_update_date: BookUpdateModel, session:AsyncSession=Depends(get_session)) -> dict:
+async def update_book(book_uid: uuid.UUID, book_update_date: BookUpdateModel, session:AsyncSession=Depends(get_session)) -> dict:
 
-    try:
-        updated_book = await book_service.update_book(book_uid , book_update_date, session)
-
-    except Exception :
-        
-        raise HTTPException(status_code=400, detail="INVALID book ID")
+    updated_book = await book_service.update_book(book_uid, book_update_date, session)
 
     if updated_book is None:
 
